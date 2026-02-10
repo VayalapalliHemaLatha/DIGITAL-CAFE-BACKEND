@@ -106,3 +106,6 @@ Run the JAR:
 ```bash
 java -jar target/digital-cafe-0.0.1-SNAPSHOT.jar
 ```
+
+run the proejct using this command 
+.\mvnw.cmd spring-boot:run
