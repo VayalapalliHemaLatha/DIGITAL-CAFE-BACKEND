@@ -1,5 +1,7 @@
 package com.cafe.digital_cafe.dto;
 
+import com.cafe.digital_cafe.entity.RoleType;
+
 public class AuthResponse {
 
     private String token;
@@ -7,15 +9,21 @@ public class AuthResponse {
     private Long id;
     private String email;
     private String name;
+    private RoleType roleType;
 
     public AuthResponse() {
     }
 
     public AuthResponse(String token, Long id, String email, String name) {
+        this(token, id, email, name, null);
+    }
+
+    public AuthResponse(String token, Long id, String email, String name, RoleType roleType) {
         this.token = token;
         this.id = id;
         this.email = email;
         this.name = name;
+        this.roleType = roleType;
     }
 
     public String getToken() {
@@ -56,5 +64,13 @@ public class AuthResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
 }

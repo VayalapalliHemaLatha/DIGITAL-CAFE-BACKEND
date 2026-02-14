@@ -26,6 +26,10 @@ public class User {
     @Column(length = 255)
     private String address;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_type", nullable = false, length = 20, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'")
+    private RoleType roleType = RoleType.CUSTOMER;
+
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
@@ -33,11 +37,16 @@ public class User {
     }
 
     public User(String name, String email, String password, String phone, String address) {
+        this(name, email, password, phone, address, RoleType.CUSTOMER);
+    }
+
+    public User(String name, String email, String password, String phone, String address, RoleType roleType) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.address = address;
+        this.roleType = roleType != null ? roleType : RoleType.CUSTOMER;
     }
 
     public Long getId() {
@@ -94,5 +103,13 @@ public class User {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType != null ? roleType : RoleType.CUSTOMER;
     }
 }

@@ -1,5 +1,6 @@
 package com.cafe.digital_cafe.security;
 
+import com.cafe.digital_cafe.entity.RoleType;
 import com.cafe.digital_cafe.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -39,10 +42,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String email = jwtService.extractEmail(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (jwtService.validateToken(token, email)) {
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    RoleType role = jwtService.extractRole(token);
+                    if (role != null) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+                    }
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                            authorities
                     );
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);

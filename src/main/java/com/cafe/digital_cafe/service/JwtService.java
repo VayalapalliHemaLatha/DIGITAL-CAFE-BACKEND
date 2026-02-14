@@ -1,5 +1,6 @@
 package com.cafe.digital_cafe.service;
 
+import com.cafe.digital_cafe.entity.RoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -25,13 +26,20 @@ public class JwtService {
     }
 
     public String generateToken(String email, Long userId) {
-        return Jwts.builder()
+        return generateToken(email, userId, null);
+    }
+
+    public String generateToken(String email, Long userId, RoleType roleType) {
+        var builder = Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(getSigningKey())
-                .compact();
+                .signWith(getSigningKey());
+        if (roleType != null) {
+            builder.claim("role", roleType.name());
+        }
+        return builder.compact();
     }
 
     public String extractEmail(String token) {
@@ -40,6 +48,11 @@ public class JwtService {
 
     public Long extractUserId(String token) {
         return getClaims(token).get("userId", Long.class);
+    }
+
+    public RoleType extractRole(String token) {
+        String role = getClaims(token).get("role", String.class);
+        return role != null ? RoleType.valueOf(role) : null;
     }
 
     public boolean validateToken(String token, String email) {

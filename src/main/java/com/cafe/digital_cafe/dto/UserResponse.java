@@ -1,5 +1,7 @@
 package com.cafe.digital_cafe.dto;
 
+import com.cafe.digital_cafe.entity.RoleType;
+
 /**
  * User data for list/detail API responses. Does not include password.
  */
@@ -10,16 +12,22 @@ public class UserResponse {
     private String email;
     private String phone;
     private String address;
+    private RoleType roleType;
 
     public UserResponse() {
     }
 
     public UserResponse(Long id, String name, String email, String phone, String address) {
+        this(id, name, email, phone, address, null);
+    }
+
+    public UserResponse(Long id, String name, String email, String phone, String address, RoleType roleType) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
+        this.roleType = roleType;
     }
 
     public Long getId() {
@@ -60,5 +68,13 @@ public class UserResponse {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
 }

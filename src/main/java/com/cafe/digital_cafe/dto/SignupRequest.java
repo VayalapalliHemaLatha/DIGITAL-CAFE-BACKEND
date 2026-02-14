@@ -1,5 +1,6 @@
 package com.cafe.digital_cafe.dto;
 
+import com.cafe.digital_cafe.entity.RoleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -14,6 +15,9 @@ public class SignupRequest {
 
     @NotBlank(message = "Name is required")
     private String name;
+
+    /** admin, cafeowner, chef, waiter, customer. Required when creating staff; defaults to customer for self-registration. */
+    private RoleType roleType;
 
     private String phone;
     private String address;
@@ -59,5 +63,13 @@ public class SignupRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
 }

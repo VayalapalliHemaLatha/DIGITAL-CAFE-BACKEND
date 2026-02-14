@@ -38,7 +38,8 @@ public class UserController {
                 u.getName(),
                 u.getEmail(),
                 u.getPhone(),
-                u.getAddress()
+                u.getAddress(),
+                u.getRoleType()
         );
     }
 }
