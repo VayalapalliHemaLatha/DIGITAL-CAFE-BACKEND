@@ -2,8 +2,10 @@ package com.cafe.digital_cafe.service;
 
 import com.cafe.digital_cafe.dto.CafeOwnerResponse;
 import com.cafe.digital_cafe.dto.UpdateCafeOwnerStatusRequest;
+import com.cafe.digital_cafe.entity.Cafe;
 import com.cafe.digital_cafe.entity.RoleType;
 import com.cafe.digital_cafe.entity.User;
+import com.cafe.digital_cafe.repository.CafeRepository;
 import com.cafe.digital_cafe.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,9 +20,11 @@ import java.util.stream.Collectors;
 public class AdminCafeOwnerService {
 
     private final UserRepository userRepository;
+    private final CafeRepository cafeRepository;
 
-    public AdminCafeOwnerService(UserRepository userRepository) {
+    public AdminCafeOwnerService(UserRepository userRepository, CafeRepository cafeRepository) {
         this.userRepository = userRepository;
+        this.cafeRepository = cafeRepository;
     }
 
     public List<CafeOwnerResponse> getAllCafeOwners() {
@@ -56,6 +60,9 @@ public class AdminCafeOwnerService {
     }
 
     private CafeOwnerResponse toResponse(User u) {
+        String cafeName = u.getCafeId() != null
+                ? cafeRepository.findById(u.getCafeId()).map(Cafe::getName).orElse(null)
+                : null;
         return new CafeOwnerResponse(
                 u.getId(),
                 u.getName(),
@@ -63,7 +70,9 @@ public class AdminCafeOwnerService {
                 u.getPhone(),
                 u.getAddress(),
                 u.getRoleType(),
-                u.isActive()
+                u.isActive(),
+                u.getCafeId(),
+                cafeName
         );
     }
 }

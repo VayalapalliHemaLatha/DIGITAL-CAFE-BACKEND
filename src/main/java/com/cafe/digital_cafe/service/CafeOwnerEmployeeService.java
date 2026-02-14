@@ -23,31 +23,35 @@ public class CafeOwnerEmployeeService {
     }
 
     public List<EmployeeResponse> getWaiters() {
-        ensureCafeOwner();
-        return userRepository.findByRoleTypeOrderByNameAsc(RoleType.WAITER)
+        User cafeOwner = getCurrentCafeOwner();
+        return userRepository.findByRoleTypeAndCafeIdOrderByNameAsc(RoleType.WAITER, cafeOwner.getCafeId())
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     public List<EmployeeResponse> getChefs() {
-        ensureCafeOwner();
-        return userRepository.findByRoleTypeOrderByNameAsc(RoleType.CHEF)
+        User cafeOwner = getCurrentCafeOwner();
+        return userRepository.findByRoleTypeAndCafeIdOrderByNameAsc(RoleType.CHEF, cafeOwner.getCafeId())
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
-    private void ensureCafeOwner() {
+    private User getCurrentCafeOwner() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof String email)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
-        boolean isCafeOwner = auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_CAFE_OWNER".equals(a.getAuthority()));
-        if (!isCafeOwner) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        if (user.getRoleType() != RoleType.CAFE_OWNER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cafe owner access required");
         }
+        if (user.getCafeId() == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cafe owner has no cafe assigned");
+        }
+        return user;
     }
 
     private EmployeeResponse toResponse(User u) {

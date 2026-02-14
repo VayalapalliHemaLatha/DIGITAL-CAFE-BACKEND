@@ -19,6 +19,9 @@ public class SignupRequest {
     /** admin, cafeowner, chef, waiter, customer. Required when creating staff; defaults to customer for self-registration. */
     private RoleType roleType;
 
+    /** Required when admin creates cafeowner - which cafe the owner manages. */
+    private Long cafeId;
+
     private String phone;
     private String address;
 
@@ -71,5 +74,13 @@ public class SignupRequest {
 
     public void setRoleType(RoleType roleType) {
         this.roleType = roleType;
+    }
+
+    public Long getCafeId() {
+        return cafeId;
+    }
+
+    public void setCafeId(Long cafeId) {
+        this.cafeId = cafeId;
     }
 }

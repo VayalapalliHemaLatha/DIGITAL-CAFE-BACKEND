@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "menu_items")
+@Table(name = "menu_items", uniqueConstraints = @UniqueConstraint(name = "uk_menu_cafe_name", columnNames = {"cafe_id", "name"}))
 public class MenuItem {
 
     @Id
@@ -27,6 +27,9 @@ public class MenuItem {
 
     @Column(nullable = false)
     private boolean available = true;
+
+    @Column(name = "cafe_id", nullable = false)
+    private Long cafeId;
 
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
@@ -95,5 +98,13 @@ public class MenuItem {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getCafeId() {
+        return cafeId;
+    }
+
+    public void setCafeId(Long cafeId) {
+        this.cafeId = cafeId;
     }
 }

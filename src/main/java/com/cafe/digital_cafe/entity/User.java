@@ -33,6 +33,9 @@ public class User {
     @Column(name = "role_type", nullable = false, length = 20, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'")
     private RoleType roleType = RoleType.CUSTOMER;
 
+    @Column(name = "cafe_id")
+    private Long cafeId;
+
     @Column(nullable = false, columnDefinition = "BIT(1) NOT NULL DEFAULT 1")
     private boolean active = true;
 
@@ -158,6 +161,14 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getCafeId() {
+        return cafeId;
+    }
+
+    public void setCafeId(Long cafeId) {
+        this.cafeId = cafeId;
     }
 
     public String getFirstName() {

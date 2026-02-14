@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Menu API for customers. Requires JWT in Authorization header.
- * GET /api/menu - list all available menu items
- * GET /api/menu?category=beverage - filter by category (beverage, food, dessert, snack)
+ * Menu API for customers. Requires JWT. Use cafeId to browse a specific cafe's menu.
+ * GET /api/menu?cafeId=1 - list available menu items for cafe
+ * GET /api/menu?cafeId=1&category=beverage - filter by category
  */
 @RestController
 @RequestMapping("/api/menu")
@@ -26,16 +26,13 @@ public class MenuController {
         this.menuService = menuService;
     }
 
-    /**
-     * List menu items. Requires valid JWT (customer, cafe owner, admin, etc.).
-     * Optional category filter: beverage, food, dessert, snack
-     */
     @GetMapping
     public ResponseEntity<List<MenuItemResponse>> getMenu(
+            @RequestParam Long cafeId,
             @RequestParam(required = false) String category) {
         List<MenuItem> items = category != null && !category.isBlank()
-                ? menuService.findByCategory(MenuCategory.fromApiValue(category))
-                : menuService.findAllAvailable();
+                ? menuService.findByCafeIdAndCategory(cafeId, MenuCategory.fromApiValue(category))
+                : menuService.findByCafeId(cafeId);
         List<MenuItemResponse> response = items.stream()
                 .map(MenuItemResponse::from)
                 .collect(Collectors.toList());

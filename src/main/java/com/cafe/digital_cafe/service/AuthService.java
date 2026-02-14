@@ -5,6 +5,7 @@ import com.cafe.digital_cafe.dto.LoginRequest;
 import com.cafe.digital_cafe.dto.SignupRequest;
 import com.cafe.digital_cafe.entity.RoleType;
 import com.cafe.digital_cafe.entity.User;
+import com.cafe.digital_cafe.repository.CafeRepository;
 import com.cafe.digital_cafe.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -16,11 +17,14 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final CafeRepository cafeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, CafeRepository cafeRepository,
+                       PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.cafeRepository = cafeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
@@ -37,7 +41,8 @@ public class AuthService {
         }
         RoleType effectiveRole = request.getRoleType() != null ? request.getRoleType() : RoleType.CUSTOMER;
         User creator = getCurrentAuthenticatedUser();
-        validateRoleCreation(creator, effectiveRole);
+        validateRoleCreation(creator, effectiveRole, request.getCafeId());
+        Long cafeId = resolveCafeId(creator, effectiveRole, request.getCafeId());
         User user = new User(
                 request.getName(),
                 request.getEmail(),
@@ -46,6 +51,7 @@ public class AuthService {
                 request.getAddress(),
                 effectiveRole
         );
+        user.setCafeId(cafeId);
         user = userRepository.save(user);
         String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRoleType());
         return new AuthResponse(token, user.getId(), user.getEmail(), user.getName(), user.getRoleType());
@@ -61,9 +67,8 @@ public class AuthService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    private void validateRoleCreation(User creator, RoleType targetRole) {
+    private void validateRoleCreation(User creator, RoleType targetRole, Long cafeId) {
         if (creator == null) {
-            // Self-registration: only customer allowed
             if (targetRole != RoleType.CUSTOMER) {
                 throw new BadCredentialsException("Self-registration only allows customer role. Use admin/cafe owner to create staff.");
             }
@@ -74,13 +79,32 @@ public class AuthService {
             if (targetRole != RoleType.CAFE_OWNER) {
                 throw new BadCredentialsException("Admin can only create cafe owner accounts.");
             }
+            if (cafeId == null) {
+                throw new BadCredentialsException("Cafe ID is required when creating cafe owner. Specify which cafe they manage.");
+            }
+            if (!cafeRepository.existsById(cafeId)) {
+                throw new BadCredentialsException("Cafe not found.");
+            }
         } else if (creatorRole == RoleType.CAFE_OWNER) {
             if (targetRole != RoleType.CHEF && targetRole != RoleType.WAITER) {
                 throw new BadCredentialsException("Cafe owner can only create chef or waiter accounts.");
             }
+            if (creator.getCafeId() == null) {
+                throw new BadCredentialsException("Cafe owner has no cafe assigned.");
+            }
         } else {
             throw new BadCredentialsException("Only admin or cafe owner can create staff accounts.");
         }
+    }
+
+    private Long resolveCafeId(User creator, RoleType targetRole, Long requestCafeId) {
+        if (targetRole == RoleType.CAFE_OWNER && creator != null && creator.getRoleType() == RoleType.ADMIN) {
+            return requestCafeId;
+        }
+        if (targetRole == RoleType.CHEF || targetRole == RoleType.WAITER) {
+            return creator != null ? creator.getCafeId() : null;
+        }
+        return null;
     }
 
     public AuthResponse login(LoginRequest request) {

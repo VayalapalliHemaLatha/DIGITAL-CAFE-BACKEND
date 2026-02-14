@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index", "/index.html", "/static/**", "/*.js", "/*.css").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/cafeowners/**").hasRole("CAFE_OWNER")
+                        .requestMatchers("/api/chef/**").hasRole("CHEF")
+                        .requestMatchers("/api/waiter/**").hasRole("WAITER")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )

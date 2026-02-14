@@ -14,11 +14,13 @@ public class CafeOwnerResponse {
     private String address;
     private RoleType roleType;
     private boolean active;
+    private Long cafeId;
+    private String cafeName;
 
     public CafeOwnerResponse() {
     }
 
-    public CafeOwnerResponse(Long id, String name, String email, String phone, String address, RoleType roleType, boolean active) {
+    public CafeOwnerResponse(Long id, String name, String email, String phone, String address, RoleType roleType, boolean active, Long cafeId, String cafeName) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,6 +28,8 @@ public class CafeOwnerResponse {
         this.address = address;
         this.roleType = roleType;
         this.active = active;
+        this.cafeId = cafeId;
+        this.cafeName = cafeName;
     }
 
     public Long getId() {
@@ -82,5 +86,21 @@ public class CafeOwnerResponse {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getCafeId() {
+        return cafeId;
+    }
+
+    public void setCafeId(Long cafeId) {
+        this.cafeId = cafeId;
+    }
+
+    public String getCafeName() {
+        return cafeName;
+    }
+
+    public void setCafeName(String cafeName) {
+        this.cafeName = cafeName;
     }
 }
