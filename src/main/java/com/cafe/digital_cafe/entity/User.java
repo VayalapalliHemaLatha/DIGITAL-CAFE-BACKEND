@@ -33,6 +33,9 @@ public class User {
     @Column(name = "role_type", nullable = false, length = 20, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'")
     private RoleType roleType = RoleType.CUSTOMER;
 
+    @Column(nullable = false, columnDefinition = "BIT(1) NOT NULL DEFAULT 1")
+    private boolean active = true;
+
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
@@ -147,6 +150,14 @@ public class User {
 
     public void setRoleType(RoleType roleType) {
         this.roleType = roleType != null ? roleType : RoleType.CUSTOMER;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getFirstName() {

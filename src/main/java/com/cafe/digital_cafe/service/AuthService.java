@@ -89,6 +89,9 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid email or password");
         }
+        if (!user.isActive()) {
+            throw new BadCredentialsException("Account is deactivated. Contact admin.");
+        }
         String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRoleType());
         return new AuthResponse(token, user.getId(), user.getEmail(), user.getName(), user.getRoleType());
     }

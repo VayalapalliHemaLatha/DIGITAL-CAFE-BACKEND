@@ -32,6 +32,8 @@ public class UserService {
         if (request.getLastName() != null) user.setLastName(request.getLastName());
         if (request.getDob() != null) user.setDob(request.getDob());
         if (request.getGender() != null) user.setGender(request.getGender());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+        if (request.getAddress() != null) user.setAddress(request.getAddress());
         if (request.getStreet() != null) user.setStreet(request.getStreet());
         if (request.getPlotNo() != null) user.setPlotNo(request.getPlotNo());
         if (request.getCity() != null) user.setCity(request.getCity());
