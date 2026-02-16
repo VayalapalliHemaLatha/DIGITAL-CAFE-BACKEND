@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRoleTypeOrderByNameAsc(RoleType roleType);
 
     List<User> findByRoleTypeAndCafeIdOrderByNameAsc(RoleType roleType, Long cafeId);
+
+    long countByRoleType(RoleType roleType);
 }

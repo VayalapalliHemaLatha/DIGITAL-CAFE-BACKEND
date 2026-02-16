@@ -119,4 +119,16 @@ public class AuthService {
         String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRoleType());
         return new AuthResponse(token, user.getId(), user.getEmail(), user.getName(), user.getRoleType());
     }
+
+    /**
+     * Forgot password: reset password by email. No JWT required.
+     * Works for all roles (customer, chef, waiter, cafe owner, admin).
+     * If email does not exist, throws error.
+     */
+    public void forgotPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email.trim())
+                .orElseThrow(() -> new BadCredentialsException("No account found with this email"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
