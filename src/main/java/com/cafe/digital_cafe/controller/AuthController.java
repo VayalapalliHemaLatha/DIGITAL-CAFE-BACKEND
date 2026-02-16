@@ -1,6 +1,7 @@
 package com.cafe.digital_cafe.controller;
 
 import com.cafe.digital_cafe.dto.AuthResponse;
+import com.cafe.digital_cafe.dto.ForgotPasswordRequest;
 import com.cafe.digital_cafe.dto.LoginRequest;
 import com.cafe.digital_cafe.dto.SignupRequest;
 import com.cafe.digital_cafe.service.AuthService;
@@ -34,6 +35,16 @@ public class AuthController {
     }
 
     /**
+     * Forgot password. No JWT required. For all roles (customer, chef, waiter, cafe owner, admin).
+     * If email exists, password is updated; otherwise 401 with error message.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request.getEmail(), request.getNewPassword());
+        return ResponseEntity.ok(new ForgotPasswordResponse("Password reset successfully. You can now login with your new password."));
+    }
+
+    /**
      * Logout. Client should discard the JWT after calling this.
      * With stateless JWT there is no server-side session to invalidate.
      */
@@ -48,6 +59,8 @@ public class AuthController {
     }
 
     public record ErrorBody(String message) {}
+
+    public record ForgotPasswordResponse(String message) {}
 
     public record LogoutResponse(String message) {}
 }
