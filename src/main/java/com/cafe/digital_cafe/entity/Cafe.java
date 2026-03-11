@@ -19,6 +19,9 @@ public class Cafe {
     @Column(length = 30)
     private String phone;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
     public Cafe() {
     }
 
@@ -26,6 +29,7 @@ public class Cafe {
         this.name = name;
         this.address = address;
         this.phone = phone;
+        this.active = true;
     }
 
     public Long getId() {
@@ -58,5 +62,13 @@ public class Cafe {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
