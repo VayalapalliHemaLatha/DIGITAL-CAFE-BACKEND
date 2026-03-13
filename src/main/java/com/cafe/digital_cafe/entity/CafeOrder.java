@@ -42,6 +42,9 @@ public class CafeOrder {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @Column(name="payment_status")
+    private String paymentStatus;
+
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
@@ -69,6 +72,8 @@ public class CafeOrder {
     public void setStatus(OrderStatus status) { this.status = status != null ? status : OrderStatus.PLACED; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount != null ? totalAmount : BigDecimal.ZERO; }
+    public String getPaymentStatus() { return paymentStatus; }
+    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public List<OrderItem> getItems() { return items; }

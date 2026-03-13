@@ -1,29 +1,28 @@
 package com.cafe.digital_cafe.service;
 
-import com.cafe.digital_cafe.entity.MenuCategory;
 import com.cafe.digital_cafe.entity.MenuItem;
+import com.cafe.digital_cafe.entity.MenuCategory;
 import com.cafe.digital_cafe.repository.MenuItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class MenuService {
 
-    private final MenuItemRepository menuItemRepository;
-
-    public MenuService(MenuItemRepository menuItemRepository) {
-        this.menuItemRepository = menuItemRepository;
+    @Autowired
+    private MenuItemRepository menuItemRepository;
+    
+    public List<MenuItem> getAllMenuItems() {
+        return menuItemRepository.findByAvailableTrueOrderByCategoryAscNameAsc();
     }
-
-    public List<MenuItem> findByCafeId(Long cafeId) {
-        if (cafeId == null) return Collections.emptyList();
-        return menuItemRepository.findByCafeIdAndAvailableTrueOrderByCategoryAscNameAsc(cafeId);
+    
+    public MenuItem getMenuItemById(Long id) {
+        return menuItemRepository.findById(id).orElse(null);
     }
-
-    public List<MenuItem> findByCafeIdAndCategory(Long cafeId, MenuCategory category) {
-        if (cafeId == null || category == null) return Collections.emptyList();
-        return menuItemRepository.findByCafeIdAndCategoryAndAvailableTrue(cafeId, category);
+    
+    public List<MenuItem> getMenuItemsByCategory(MenuCategory category) {
+        return menuItemRepository.findByCategoryAndAvailableTrue(category);
     }
 }
