@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private static final String DEFAULT_PASSWORD = "password123";
+
     private final UserRepository userRepository;
     private final CafeRepository cafeRepository;
     private final MenuItemRepository menuItemRepository;
@@ -64,10 +66,12 @@ public class DataLoader implements CommandLineRunner {
 
         Long cafeId = cafeRepository.findAll().stream().findFirst().map(Cafe::getId).orElse(null);
 
+        String encoded = passwordEncoder.encode(DEFAULT_PASSWORD);
+
         User admin = new User(
                 "Admin User",
                 "admin@digitalcafe.com",
-                passwordEncoder.encode("password123"),
+                encoded,
                 "+1-555-0000",
                 "System",
                 RoleType.ADMIN
@@ -75,7 +79,7 @@ public class DataLoader implements CommandLineRunner {
         User cafeOwner = new User(
                 "Jane Smith",
                 "jane@digitalcafe.com",
-                passwordEncoder.encode("password123"),
+                encoded,
                 "+1-555-0102",
                 "456 Oak Ave, Los Angeles, CA",
                 RoleType.CAFE_OWNER
@@ -84,7 +88,7 @@ public class DataLoader implements CommandLineRunner {
         User customer = new User(
                 "John Doe",
                 "john@digitalcafe.com",
-                passwordEncoder.encode("password123"),
+                encoded,
                 "+1-555-0101",
                 "123 Main St, New York, NY",
                 RoleType.CUSTOMER
@@ -92,7 +96,7 @@ public class DataLoader implements CommandLineRunner {
         User chef = new User(
                 "Bob Chef",
                 "chef@digitalcafe.com",
-                passwordEncoder.encode("password123"),
+                encoded,
                 "+1-555-0103",
                 "789 Kitchen Rd",
                 RoleType.CHEF
@@ -101,23 +105,39 @@ public class DataLoader implements CommandLineRunner {
         User waiter = new User(
                 "Alice Waiter",
                 "waiter@digitalcafe.com",
-                passwordEncoder.encode("password123"),
+                encoded,
                 "+1-555-0104",
                 "321 Service Ave",
                 RoleType.WAITER
         );
         waiter.setCafeId(cafeId);
+        User customer2 = new User(
+                "Mary Customer",
+                "mary@digitalcafe.com",
+                encoded,
+                "+1-555-0105",
+                "100 Customer Lane",
+                RoleType.CUSTOMER
+        );
 
         userRepository.save(admin);
         userRepository.save(cafeOwner);
         userRepository.save(customer);
         userRepository.save(chef);
         userRepository.save(waiter);
+        userRepository.save(customer2);
 
-        System.out.println("  Sample users inserted:");
-        System.out.println("    Admin: admin@digitalcafe.com / password123");
-        System.out.println("    Cafe Owner: jane@digitalcafe.com / password123");
-        System.out.println("    Customer: john@digitalcafe.com / password123");
+        printSeededUsers();
+    }
+
+    private void printSeededUsers() {
+        System.out.println("  --- Seeded users (all password: " + DEFAULT_PASSWORD + ") ---");
+        System.out.println("    admin@digitalcafe.com   (ADMIN)");
+        System.out.println("    jane@digitalcafe.com   (CAFE_OWNER)");
+        System.out.println("    john@digitalcafe.com   (CUSTOMER)");
+        System.out.println("    mary@digitalcafe.com   (CUSTOMER)");
+        System.out.println("    chef@digitalcafe.com   (CHEF)");
+        System.out.println("    waiter@digitalcafe.com (WAITER)");
     }
 
     private void loadMenuItems() {
@@ -225,19 +245,19 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("  Sample order inserted for customer john@digitalcafe.com (order id: " + order.getId() + ")");
     }
 
-    /** Ensures admin account hema@gmail.com exists (created on every startup if missing). */
+    /** Ensures admin account hema@gmail.com exists (created on every startup if missing). Same password as others. */
     private void ensureHemaAdmin() {
         if (userRepository.existsByEmail("hema@gmail.com")) return;
         User hema = new User(
                 "Hema",
                 "hema@gmail.com",
-                passwordEncoder.encode("hema@123"),
+                passwordEncoder.encode(DEFAULT_PASSWORD),
                 null,
                 null,
                 RoleType.ADMIN
         );
         userRepository.save(hema);
-        System.out.println("  Admin account created: hema@gmail.com / hema@123");
+        System.out.println("  Admin created: hema@gmail.com / " + DEFAULT_PASSWORD);
     }
 
     @Override
@@ -249,6 +269,8 @@ public class DataLoader implements CommandLineRunner {
         loadTables();
         loadSampleOrders();
         ensureMenuItemsHaveValidCafe();
+        System.out.println("  --- Test logins (all password: " + DEFAULT_PASSWORD + ") ---");
+        System.out.println("    admin@digitalcafe.com, jane@digitalcafe.com, john@digitalcafe.com, mary@digitalcafe.com, chef@digitalcafe.com, waiter@digitalcafe.com, hema@gmail.com");
     }
 
     /**
