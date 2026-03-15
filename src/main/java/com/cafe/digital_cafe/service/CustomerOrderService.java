@@ -99,7 +99,7 @@ public class CustomerOrderService {
                 cafeId = mi.getCafeId();
             } else if (!mi.getCafeId().equals(cafeId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "All items must be from the same cafe. Menu item " + ir.getMenuItemId() + " belongs to cafe " + mi.getCafeId() + ", others to cafe " + cafeId + ".");
+                        "All items must be from the same cafe. Menu item " + ir.getMenuItemId() + " (\"" + mi.getName() + "\") belongs to cafe " + mi.getCafeId() + "; other items are from cafe " + cafeId + ". Use GET /api/menu?cafeId=" + cafeId + " to add only that cafe's items, or remove item " + ir.getMenuItemId() + " from the cart.");
             }
             if (!mi.isAvailable()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Menu item not available: " + mi.getName());

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class MenuItemResponse {
 
     private Long id;
+    private Long cafeId;
     private String name;
     private String description;
     private BigDecimal price;
@@ -17,9 +18,10 @@ public class MenuItemResponse {
     public MenuItemResponse() {
     }
 
-    public MenuItemResponse(Long id, String name, String description, BigDecimal price,
+    public MenuItemResponse(Long id, Long cafeId, String name, String description, BigDecimal price,
                             MenuCategory category, boolean available) {
         this.id = id;
+        this.cafeId = cafeId;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -30,6 +32,7 @@ public class MenuItemResponse {
     public static MenuItemResponse from(MenuItem item) {
         return new MenuItemResponse(
                 item.getId(),
+                item.getCafeId(),
                 item.getName(),
                 item.getDescription(),
                 item.getPrice(),
@@ -40,6 +43,8 @@ public class MenuItemResponse {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getCafeId() { return cafeId; }
+    public void setCafeId(Long cafeId) { this.cafeId = cafeId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
