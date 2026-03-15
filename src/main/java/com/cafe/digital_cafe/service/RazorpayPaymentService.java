@@ -4,19 +4,28 @@ import com.cafe.digital_cafe.dto.RazorpayOrderResponse;
 import com.cafe.digital_cafe.dto.VerifyPaymentRequest;
 import com.cafe.digital_cafe.entity.CafeOrder;
 import com.cafe.digital_cafe.repository.CafeOrderRepository;
-import com.razorpay.RazorpayClient;
 import com.razorpay.Utils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Service
 public class RazorpayPaymentService {
+
+    private static final Logger log = LoggerFactory.getLogger(RazorpayPaymentService.class);
 
     private final String keyId;
     private final String keySecret;
@@ -35,6 +44,7 @@ public class RazorpayPaymentService {
         this.currency = currency != null ? currency.trim() : "INR";
         this.companyName = companyName != null ? companyName.trim() : "Digital Cafe";
         this.orderRepository = orderRepository;
+        log.info("Razorpay loaded: key_id={}, key_secret length={} (expected 24 for correct secret)", this.keyId, this.keySecret.length());
     }
 
     public RazorpayOrderResponse createRazorpayOrder(Long orderId, Long userId) {
@@ -56,7 +66,6 @@ public class RazorpayPaymentService {
         }
         String receipt = "order_" + orderId;
         try {
-            RazorpayClient client = new RazorpayClient(keyId, keySecret);
             JSONObject orderRequest = new JSONObject();
             orderRequest.put("amount", amountPaise);
             orderRequest.put("currency", currency);
@@ -65,8 +74,10 @@ public class RazorpayPaymentService {
             notes.put("cafe_order_id", String.valueOf(orderId));
             orderRequest.put("notes", notes);
 
-            com.razorpay.Order razorpayOrder = client.orders.create(orderRequest);
-            String razorpayOrderId = String.valueOf(razorpayOrder.get("id"));
+            String razorpayOrderId = createOrderViaHttp(orderRequest);
+            if (razorpayOrderId == null || razorpayOrderId.isEmpty()) {
+                throw new IllegalStateException("Razorpay order response missing id");
+            }
 
             order.setRazorpayOrderId(razorpayOrderId);
             orderRepository.save(order);
@@ -88,6 +99,24 @@ public class RazorpayPaymentService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to create payment order: " + msg);
         }
+    }
+
+    private String createOrderViaHttp(JSONObject orderRequest) throws Exception {
+        String auth = keyId + ":" + keySecret;
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.razorpay.com/v1/orders"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Basic " + encodedAuth)
+                .POST(HttpRequest.BodyPublishers.ofString(orderRequest.toString()))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Razorpay API error: " + response.statusCode() + " " + response.body());
+        }
+        JSONObject json = new JSONObject(response.body());
+        return json.optString("id", null);
     }
 
     public void verifyAndCapturePayment(Long orderId, Long userId, VerifyPaymentRequest request) {
