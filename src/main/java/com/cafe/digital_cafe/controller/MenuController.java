@@ -30,9 +30,12 @@ public class MenuController {
     public ResponseEntity<List<MenuItemResponse>> getMenu(
             @RequestParam Long cafeId,
             @RequestParam(required = false) String category) {
-        List<MenuItem> items = category != null && !category.isBlank()
-                ? menuService.findByCafeIdAndCategory(cafeId, MenuCategory.fromApiValue(category))
-                : menuService.findByCafeId(cafeId);
+        List<MenuItem> items;
+        if (category != null && !category.isBlank()) {
+            items = menuService.getMenuByCafeAndCategory(cafeId, MenuCategory.fromApiValue(category));
+        } else {
+            items = menuService.getMenuByCafe(cafeId);
+        }
         List<MenuItemResponse> response = items.stream()
                 .map(MenuItemResponse::from)
                 .collect(Collectors.toList());

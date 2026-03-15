@@ -110,12 +110,30 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        
+        String storedPassword = user.getPassword();
+        String inputPassword = request.getPassword();
+        
+        // Check if password is BCrypt encoded
+        boolean isBCrypt = storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$");
+        
+        boolean passwordMatches;
+        if (isBCrypt) {
+            // Use BCrypt comparison for encoded passwords
+            passwordMatches = passwordEncoder.matches(inputPassword, storedPassword);
+        } else {
+            // Use direct comparison for plain text passwords
+            passwordMatches = inputPassword.equals(storedPassword);
+        }
+        
+        if (!passwordMatches) {
             throw new BadCredentialsException("Invalid email or password");
         }
+        
         if (!user.isActive()) {
             throw new BadCredentialsException("Account is deactivated. Contact admin.");
         }
+        
         String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getRoleType());
         return new AuthResponse(token, user.getId(), user.getEmail(), user.getName(), user.getRoleType());
     }

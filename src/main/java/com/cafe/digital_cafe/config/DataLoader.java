@@ -54,15 +54,15 @@ public class DataLoader implements CommandLineRunner {
 
         User admin = new User(
                 "Admin User",
-                "admin@digitalcafe.com",
+                "hema@gmail.com",
                 passwordEncoder.encode("password123"),
                 "+1-555-0000",
                 "System",
                 RoleType.ADMIN
         );
         User cafeOwner = new User(
-                "Jane Smith",
-                "jane@digitalcafe.com",
+                "Cafe Owner",
+                "cafeowner@gmail.com",
                 passwordEncoder.encode("password123"),
                 "+1-555-0102",
                 "456 Oak Ave, Los Angeles, CA",
@@ -103,8 +103,8 @@ public class DataLoader implements CommandLineRunner {
         userRepository.save(waiter);
 
         System.out.println("  Sample users inserted:");
-        System.out.println("    Admin: admin@digitalcafe.com / password123");
-        System.out.println("    Cafe Owner: jane@digitalcafe.com / password123");
+        System.out.println("    Admin: hema@gmail.com / password123");
+        System.out.println("    Cafe Owner: cafeowner@gmail.com / password123");
         System.out.println("    Customer: john@digitalcafe.com / password123");
     }
 
@@ -158,19 +158,27 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("  Sample restaurant tables inserted");
     }
 
-    /** Ensures admin account hema@gmail.com exists (created on every startup if missing). */
+    /** Ensures admin account hema@gmail.com exists and has known password for login. */
     private void ensureHemaAdmin() {
-        if (userRepository.existsByEmail("hema@gmail.com")) return;
-        User hema = new User(
-                "Hema",
-                "hema@gmail.com",
-                passwordEncoder.encode("hema@123"),
-                null,
-                null,
-                RoleType.ADMIN
-        );
-        userRepository.save(hema);
-        System.out.println("  Admin account created: hema@gmail.com / hema@123");
+        String knownPassword = "Hema@12345";
+        var opt = userRepository.findByEmail("hema@gmail.com");
+        if (opt.isEmpty()) {
+            User hema = new User(
+                    "Hema",
+                    "hema@gmail.com",
+                    passwordEncoder.encode(knownPassword),
+                    null,
+                    null,
+                    RoleType.ADMIN
+            );
+            userRepository.save(hema);
+            System.out.println("  Admin created: hema@gmail.com / " + knownPassword);
+        } else {
+            User hema = opt.get();
+            hema.setPassword(passwordEncoder.encode(knownPassword));
+            userRepository.save(hema);
+            System.out.println("  Admin password set: hema@gmail.com / " + knownPassword);
+        }
     }
 
     @Override

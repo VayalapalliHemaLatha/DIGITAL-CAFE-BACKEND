@@ -31,10 +31,8 @@ public class OrderService {
         BigDecimal totalAmount = cartService.calculateTotal();
         
         CafeOrder order = new CafeOrder();
-        order.setCustomerId(request.getCustomerId());
-        order.setTableNumber(request.getTableNumber());
+        order.setUserId(request.getCustomerId());
         order.setTotalAmount(totalAmount);
-        order.setOrderStatus("PLACED");
         order.setPaymentStatus("PENDING");
         
         order = orderRepository.save(order);
@@ -59,21 +57,18 @@ public class OrderService {
     public CafeOrder updatePaymentStatus(Long orderId, String paymentStatus, String paymentId) {
         CafeOrder order = orderRepository.findById(orderId).orElse(null);
         if (order != null) {
-            order.setPaymentStatus(paymentStatus);
-            if (paymentId != null) {
-                order.setPaymentId(paymentId);
-            }
+                order.setPaymentStatus(paymentStatus);
             order = orderRepository.save(order);
         }
         return order;
     }
     
     public List<CafeOrder> getCustomerOrders(Long customerId) {
-        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(customerId);
     }
     
     public List<CafeOrder> getAllOrders() {
-        return orderRepository.findAllByOrderByCreatedAtDesc();
+        return orderRepository.findAll();
     }
     
     public CafeOrder getOrderById(Long orderId) {

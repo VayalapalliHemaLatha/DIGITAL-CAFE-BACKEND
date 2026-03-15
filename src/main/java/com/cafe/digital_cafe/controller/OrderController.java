@@ -32,11 +32,6 @@ public class OrderController {
     @Autowired
     private RazorpayService razorpayService;
 
-    @GetMapping("/menu")
-    public ResponseEntity<List<MenuItem>> getMenu() {
-        return ResponseEntity.ok(menuService.getAllMenuItems());
-    }
-
     @PostMapping("/cart/add")
     public ResponseEntity<String> addToCart(@RequestBody CartItemRequest request) {
         cartService.addToCart(request);

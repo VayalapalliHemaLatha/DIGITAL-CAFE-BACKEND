@@ -16,7 +16,7 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
     List<MenuItem> findByCafeIdAndAvailableTrueOrderByCategoryAscNameAsc(Long cafeId);
 
-    List<MenuItem> findByCafeIdAndCategoryAndAvailableTrue(Long cafeId, MenuCategory category);
+    List<MenuItem> findByCafeIdAndCategoryAndAvailableTrueOrderByNameAsc(Long cafeId, MenuCategory category);
 
     boolean existsByCafeIdAndName(Long cafeId, String name);
 }
