@@ -22,6 +22,7 @@ public class OrderResponse {
     private LocalTime orderTime;
     private OrderStatus status;
     private BigDecimal totalAmount;
+    private Boolean paymentPaid;
     private Instant createdAt;
     private List<OrderItemResponse> items;
 
@@ -49,6 +50,8 @@ public class OrderResponse {
     public void setStatus(OrderStatus status) { this.status = status; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+    public Boolean getPaymentPaid() { return paymentPaid; }
+    public void setPaymentPaid(Boolean paymentPaid) { this.paymentPaid = paymentPaid; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public List<OrderItemResponse> getItems() { return items; }

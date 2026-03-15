@@ -22,6 +22,15 @@ public class MenuService {
         return menuItemRepository.findByCafeIdAndAvailableTrueOrderByCategoryAscNameAsc(cafeId);
     }
 
+    public List<MenuItem> findAllAvailable() {
+        return menuItemRepository.findByAvailableTrueOrderByCategoryAscNameAsc();
+    }
+
+    public List<MenuItem> findAllAvailableByCategory(MenuCategory category) {
+        if (category == null) return findAllAvailable();
+        return menuItemRepository.findByCategoryAndAvailableTrue(category);
+    }
+
     public List<MenuItem> findByCafeIdAndCategory(Long cafeId, MenuCategory category) {
         if (cafeId == null || category == null) return Collections.emptyList();
         return menuItemRepository.findByCafeIdAndCategoryAndAvailableTrue(cafeId, category);

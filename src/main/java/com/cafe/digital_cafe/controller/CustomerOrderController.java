@@ -1,5 +1,6 @@
 package com.cafe.digital_cafe.controller;
 
+import com.cafe.digital_cafe.dto.CreateOrderFromCartRequest;
 import com.cafe.digital_cafe.dto.CreateOrderRequest;
 import com.cafe.digital_cafe.dto.OrderResponse;
 import com.cafe.digital_cafe.service.CustomerOrderService;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:7000", "http://127.0.0.1:7000"})
 public class CustomerOrderController {
 
     private final CustomerOrderService orderService;
@@ -24,6 +25,16 @@ public class CustomerOrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         OrderResponse response = orderService.createOrder(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * Cart-style order (Swiggy/Zomato style): send only items + orderDate + orderTime.
+     * Cafe is inferred from items (all must be from same cafe). tableId is optional.
+     */
+    @PostMapping("/from-cart")
+    public ResponseEntity<OrderResponse> createOrderFromCart(@Valid @RequestBody CreateOrderFromCartRequest request) {
+        OrderResponse response = orderService.createOrderFromCart(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

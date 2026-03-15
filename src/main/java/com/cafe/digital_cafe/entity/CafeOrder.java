@@ -42,6 +42,12 @@ public class CafeOrder {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @Column(name = "razorpay_order_id", length = 64)
+    private String razorpayOrderId;
+
+    @Column(name = "razorpay_payment_id", length = 64)
+    private String razorpayPaymentId;
+
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
@@ -69,6 +75,10 @@ public class CafeOrder {
     public void setStatus(OrderStatus status) { this.status = status != null ? status : OrderStatus.PLACED; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount != null ? totalAmount : BigDecimal.ZERO; }
+    public String getRazorpayOrderId() { return razorpayOrderId; }
+    public void setRazorpayOrderId(String razorpayOrderId) { this.razorpayOrderId = razorpayOrderId; }
+    public String getRazorpayPaymentId() { return razorpayPaymentId; }
+    public void setRazorpayPaymentId(String razorpayPaymentId) { this.razorpayPaymentId = razorpayPaymentId; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public List<OrderItem> getItems() { return items; }

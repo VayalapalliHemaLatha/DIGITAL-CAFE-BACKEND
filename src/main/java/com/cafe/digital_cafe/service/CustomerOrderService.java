@@ -43,7 +43,8 @@ public class CustomerOrderService {
         RestaurantTable table = tableRepository.findById(request.getTableId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found"));
         if (!table.getCafeId().equals(request.getCafeId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table does not belong to this cafe");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Table does not belong to this cafe. Table " + request.getTableId() + " belongs to cafe " + table.getCafeId() + ". Use a table for cafe " + request.getCafeId() + ".");
         }
         CafeOrder order = new CafeOrder();
         order.setUserId(userId);
@@ -58,11 +59,80 @@ public class CustomerOrderService {
             MenuItem mi = menuItemRepository.findById(ir.getMenuItemId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu item not found: " + ir.getMenuItemId()));
             if (!mi.getCafeId().equals(request.getCafeId())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Menu item does not belong to this cafe");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Menu item " + ir.getMenuItemId() + " (" + mi.getName() + ") belongs to cafe " + mi.getCafeId() + ", not cafe " + request.getCafeId() + ". Use GET /api/cafes/" + request.getCafeId() + " to get menu and table ids for this cafe.");
             }
             if (!mi.isAvailable()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Menu item not available: " + mi.getName());
             }
+            OrderItem oi = new OrderItem();
+            oi.setOrder(order);
+            oi.setMenuItemId(mi.getId());
+            oi.setItemName(mi.getName());
+            oi.setQuantity(ir.getQuantity());
+            oi.setUnitPrice(mi.getPrice());
+            order.getItems().add(oi);
+            total = total.add(mi.getPrice().multiply(BigDecimal.valueOf(ir.getQuantity())));
+        }
+        order.setTotalAmount(total);
+        order = orderRepository.save(order);
+        return toOrderResponse(order, user.getName(), cafe.getName(), table.getTableNumber());
+    }
+
+    /**
+     * Cart-style order: cafe is inferred from items (all must be from same cafe).
+     * Table is optional; if omitted, first table of that cafe is used.
+     */
+    @Transactional
+    public OrderResponse createOrderFromCart(CreateOrderFromCartRequest request) {
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one item is required");
+        }
+        Long userId = getCurrentUserId();
+        User user = userRepository.findById(userId).orElseThrow();
+
+        Long cafeId = null;
+        for (OrderItemRequest ir : request.getItems()) {
+            MenuItem mi = menuItemRepository.findById(ir.getMenuItemId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu item not found: " + ir.getMenuItemId()));
+            if (cafeId == null) {
+                cafeId = mi.getCafeId();
+            } else if (!mi.getCafeId().equals(cafeId)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "All items must be from the same cafe. Menu item " + ir.getMenuItemId() + " belongs to cafe " + mi.getCafeId() + ", others to cafe " + cafeId + ".");
+            }
+            if (!mi.isAvailable()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Menu item not available: " + mi.getName());
+            }
+        }
+
+        final Long inferredCafeId = cafeId;
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cafe not found (id " + inferredCafeId + "). The menu item(s) reference a cafe that may have been deleted or not seeded. Restart the app to auto-repair menu data, or ensure GET /api/cafes returns cafes."));
+
+        List<RestaurantTable> tables = tableRepository.findByCafeIdOrderByTableNumberAsc(cafeId);
+        if (tables.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No tables found for cafe " + cafeId);
+        }
+        Long tableId = request.getTableId() != null ? request.getTableId() : tables.get(0).getId();
+        RestaurantTable table = tableRepository.findById(tableId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found"));
+        if (!table.getCafeId().equals(cafeId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table " + tableId + " does not belong to cafe " + cafeId);
+        }
+
+        CafeOrder order = new CafeOrder();
+        order.setUserId(userId);
+        order.setCafeId(cafeId);
+        order.setTableId(tableId);
+        order.setBookingId(request.getBookingId());
+        order.setOrderDate(request.getOrderDate());
+        order.setOrderTime(request.getOrderTime());
+        order.setStatus(OrderStatus.PLACED);
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItemRequest ir : request.getItems()) {
+            MenuItem mi = menuItemRepository.findById(ir.getMenuItemId()).orElseThrow();
             OrderItem oi = new OrderItem();
             oi.setOrder(order);
             oi.setMenuItemId(mi.getId());
@@ -126,6 +196,7 @@ public class CustomerOrderService {
         r.setOrderTime(o.getOrderTime());
         r.setStatus(o.getStatus());
         r.setTotalAmount(o.getTotalAmount());
+        r.setPaymentPaid(o.getRazorpayPaymentId() != null);
         r.setCreatedAt(o.getCreatedAt());
         List<OrderItemResponse> items = new ArrayList<>();
         for (OrderItem oi : o.getItems()) {
