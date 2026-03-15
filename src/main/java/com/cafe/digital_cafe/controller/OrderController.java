@@ -44,7 +44,7 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @PostMapping("/payment/create-order")
+    @PostMapping("/payment/create-razorpay-order")
     public ResponseEntity<Map<String, Object>> createPaymentOrder(@RequestParam Long orderId) {
         try {
             CafeOrder order = orderService.getOrderById(orderId);
