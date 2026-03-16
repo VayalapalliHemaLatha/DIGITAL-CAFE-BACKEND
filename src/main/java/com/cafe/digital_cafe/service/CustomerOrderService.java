@@ -161,15 +161,23 @@ public class CustomerOrderService {
 
     public OrderResponse getOrder(Long id) {
         Long userId = getCurrentUserId();
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         CafeOrder order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-        if (!order.getUserId().equals(userId)) {
+
+        boolean isOwner = order.getUserId().equals(userId);
+        boolean isStaff = currentUser.getRoleType() == RoleType.ADMIN ||
+                ((currentUser.getRoleType() == RoleType.CAFE_OWNER || currentUser.getRoleType() == RoleType.WAITER)
+                        && order.getCafeId().equals(currentUser.getCafeId()));
+
+        if (!isOwner && !isStaff) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
         }
-        User user = userRepository.findById(userId).orElse(null);
+        
         String cafeName = cafeRepository.findById(order.getCafeId()).map(Cafe::getName).orElse(null);
         String tableNum = tableRepository.findById(order.getTableId()).map(RestaurantTable::getTableNumber).orElse(null);
-        return toOrderResponse(order, user != null ? user.getName() : null, cafeName, tableNum);
+        return toOrderResponse(order, currentUser.getName(), cafeName, tableNum);
     }
 
     private Long getCurrentUserId() {

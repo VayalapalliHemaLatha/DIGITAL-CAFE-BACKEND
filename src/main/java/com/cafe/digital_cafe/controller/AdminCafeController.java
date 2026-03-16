@@ -36,14 +36,14 @@ public class AdminCafeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CafeResponse> updateCafe(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateCafeRequest request) {
         CafeResponse response = adminCafeService.updateCafe(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCafe(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCafe(@PathVariable("id") Long id) {
         adminCafeService.deleteCafe(id);
         return ResponseEntity.noContent().build();
     }

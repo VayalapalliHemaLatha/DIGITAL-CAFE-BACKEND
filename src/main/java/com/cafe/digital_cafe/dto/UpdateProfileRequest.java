@@ -23,6 +23,7 @@ public class UpdateProfileRequest {
     private String pincode;
     private String phone;
     private String address;
+    private String profileImageUrl;
 
     public UpdateProfileRequest() {
     }
@@ -121,5 +122,13 @@ public class UpdateProfileRequest {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

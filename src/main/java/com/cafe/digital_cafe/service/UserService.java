@@ -38,6 +38,7 @@ public class UserService {
         if (request.getPlotNo() != null) user.setPlotNo(request.getPlotNo());
         if (request.getCity() != null) user.setCity(request.getCity());
         if (request.getPincode() != null) user.setPincode(request.getPincode());
+        if (request.getProfileImageUrl() != null) user.setProfileImageUrl(request.getProfileImageUrl());
 
         if (request.getAcademicInformation() != null) {
             user.getEducationList().clear();
@@ -96,6 +97,7 @@ public class UserService {
         r.setPlotNo(user.getPlotNo());
         r.setCity(user.getCity());
         r.setPincode(user.getPincode());
+        r.setProfileImageUrl(user.getProfileImageUrl());
 
         List<AcademicEntry> academics = user.getEducationList().stream()
                 .map(e -> new AcademicEntry(e.getDegree(), e.getInstitution(), e.getCompletionYear()))

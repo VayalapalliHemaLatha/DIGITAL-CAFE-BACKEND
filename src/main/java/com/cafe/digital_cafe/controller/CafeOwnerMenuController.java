@@ -45,7 +45,7 @@ public class CafeOwnerMenuController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemResponse> updateMenuItem(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateMenuItemRequest request) {
         MenuItemResponse response = cafeOwnerMenuService.updateMenuItem(id, request);
         return ResponseEntity.ok(response);
@@ -55,7 +55,7 @@ public class CafeOwnerMenuController {
      * Remove menu item. Cafe owner only.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMenuItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMenuItem(@PathVariable("id") Long id) {
         cafeOwnerMenuService.deleteMenuItem(id);
         return ResponseEntity.noContent().build();
     }

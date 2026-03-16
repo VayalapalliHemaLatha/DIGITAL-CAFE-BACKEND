@@ -28,6 +28,9 @@ public class MenuItem {
     @Column(nullable = false)
     private boolean available = true;
 
+    @Column(length = 2083)
+    private String imageUrl;
+
     @Column(name = "cafe_id", nullable = false)
     private Long cafeId;
 
@@ -90,6 +93,14 @@ public class MenuItem {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Instant getCreatedAt() {

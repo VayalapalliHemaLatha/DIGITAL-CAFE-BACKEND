@@ -10,6 +10,7 @@ public class AuthResponse {
     private String email;
     private String name;
     private RoleType roleType;
+    private String profileImageUrl;
 
     public AuthResponse() {
     }
@@ -19,11 +20,16 @@ public class AuthResponse {
     }
 
     public AuthResponse(String token, Long id, String email, String name, RoleType roleType) {
+        this(token, id, email, name, roleType, null);
+    }
+
+    public AuthResponse(String token, Long id, String email, String name, RoleType roleType, String profileImageUrl) {
         this.token = token;
         this.id = id;
         this.email = email;
         this.name = name;
         this.roleType = roleType;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public String getToken() {
@@ -72,5 +78,13 @@ public class AuthResponse {
 
     public void setRoleType(RoleType roleType) {
         this.roleType = roleType;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

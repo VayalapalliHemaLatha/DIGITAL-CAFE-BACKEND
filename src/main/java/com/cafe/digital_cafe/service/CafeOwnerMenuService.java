@@ -48,6 +48,9 @@ public class CafeOwnerMenuService {
         );
         item.setCafeId(cafeId);
         item.setAvailable(request.isAvailable());
+        if (request.getImageUrl() != null) {
+            item.setImageUrl(request.getImageUrl());
+        }
         item = menuItemRepository.save(item);
         return MenuItemResponse.from(item);
     }
@@ -69,6 +72,7 @@ public class CafeOwnerMenuService {
         if (request.getPrice() != null) item.setPrice(request.getPrice());
         if (request.getCategory() != null) item.setCategory(request.getCategory());
         if (request.getAvailable() != null) item.setAvailable(request.getAvailable());
+        if (request.getImageUrl() != null) item.setImageUrl(request.getImageUrl());
         item = menuItemRepository.save(item);
         return MenuItemResponse.from(item);
     }

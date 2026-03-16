@@ -20,6 +20,7 @@ public class CreateMenuItemRequest {
     @NotNull(message = "Category is required")
     private MenuCategory category;
     private boolean available = true;
+    private String imageUrl;
 
     public CreateMenuItemRequest() {
     }
@@ -62,5 +63,13 @@ public class CreateMenuItemRequest {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

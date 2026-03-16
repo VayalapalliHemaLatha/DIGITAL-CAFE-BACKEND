@@ -42,6 +42,9 @@ public class User {
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
+    @Column(name = "profile_image_url", length = 2083)
+    private String profileImageUrl;
+
     // Profile fields (all optional)
     @Column(name = "first_name", length = 50)
     private String firstName;
@@ -249,5 +252,13 @@ public class User {
 
     public void setWorkExperienceList(List<UserWorkExperience> workExperienceList) {
         this.workExperienceList = workExperienceList != null ? workExperienceList : new ArrayList<>();
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

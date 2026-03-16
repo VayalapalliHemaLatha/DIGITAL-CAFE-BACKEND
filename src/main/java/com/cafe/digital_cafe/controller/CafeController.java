@@ -26,7 +26,7 @@ public class CafeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CafeDetailResponse> getCafeDetail(@PathVariable Long id) {
+    public ResponseEntity<CafeDetailResponse> getCafeDetail(@PathVariable("id") Long id) {
         CafeDetailResponse detail = cafeService.getCafeDetail(id);
         return ResponseEntity.ok(detail);
     }

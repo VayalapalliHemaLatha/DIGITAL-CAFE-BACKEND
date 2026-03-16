@@ -26,7 +26,7 @@ public class PaymentController {
     }
 
     @PostMapping("/{orderId}/payment/create")
-    public ResponseEntity<RazorpayOrderResponse> createPaymentOrder(@PathVariable Long orderId) {
+    public ResponseEntity<RazorpayOrderResponse> createPaymentOrder(@PathVariable("orderId") Long orderId) {
         Long userId = getCurrentUserId();
         RazorpayOrderResponse response = paymentService.createRazorpayOrder(orderId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -34,7 +34,7 @@ public class PaymentController {
 
     @PostMapping("/{orderId}/payment/verify")
     public ResponseEntity<Void> verifyPayment(
-            @PathVariable Long orderId,
+            @PathVariable("orderId") Long orderId,
             @Valid @RequestBody VerifyPaymentRequest request) {
         Long userId = getCurrentUserId();
         paymentService.verifyAndCapturePayment(orderId, userId, request);

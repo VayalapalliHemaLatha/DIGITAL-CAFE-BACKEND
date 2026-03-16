@@ -25,7 +25,7 @@ public class CafeOwnerOrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable("id") Long id) {
         OrderResponse response = cafeOwnerOrderService.getOrder(id);
         return ResponseEntity.ok(response);
     }

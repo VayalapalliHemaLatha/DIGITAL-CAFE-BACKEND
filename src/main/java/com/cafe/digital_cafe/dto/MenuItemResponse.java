@@ -14,12 +14,13 @@ public class MenuItemResponse {
     private BigDecimal price;
     private MenuCategory category;
     private boolean available;
+    private String imageUrl;
 
     public MenuItemResponse() {
     }
 
     public MenuItemResponse(Long id, Long cafeId, String name, String description, BigDecimal price,
-                            MenuCategory category, boolean available) {
+                            MenuCategory category, boolean available, String imageUrl) {
         this.id = id;
         this.cafeId = cafeId;
         this.name = name;
@@ -27,6 +28,7 @@ public class MenuItemResponse {
         this.price = price;
         this.category = category;
         this.available = available;
+        this.imageUrl = imageUrl;
     }
 
     public static MenuItemResponse from(MenuItem item) {
@@ -37,7 +39,8 @@ public class MenuItemResponse {
                 item.getDescription(),
                 item.getPrice(),
                 item.getCategory(),
-                item.isAvailable()
+                item.isAvailable(),
+                item.getImageUrl()
         );
     }
 
@@ -55,4 +58,6 @@ public class MenuItemResponse {
     public void setCategory(MenuCategory category) { this.category = category; }
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

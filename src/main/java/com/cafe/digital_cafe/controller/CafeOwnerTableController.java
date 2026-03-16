@@ -40,7 +40,7 @@ public class CafeOwnerTableController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<TableResponse> updateTable(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateTableRequest request) {
         TableResponse response = cafeOwnerTableService.updateTable(id, request);
         return ResponseEntity.ok(response);
@@ -51,7 +51,7 @@ public class CafeOwnerTableController {
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<TableResponse> updateTableStatus(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateTableStatusRequest request) {
         TableResponse response = cafeOwnerTableService.updateTableStatus(id, request);
         return ResponseEntity.ok(response);
@@ -61,7 +61,7 @@ public class CafeOwnerTableController {
      * Remove table. Cafe owner only.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTable(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTable(@PathVariable("id") Long id) {
         cafeOwnerTableService.deleteTable(id);
         return ResponseEntity.noContent().build();
     }

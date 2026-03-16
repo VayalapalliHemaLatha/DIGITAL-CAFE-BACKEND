@@ -27,7 +27,7 @@ public class ChefOrderController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderResponse> updateStatus(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateOrderStatusRequest request) {
         OrderResponse response = chefOrderService.updateOrderStatus(id, request);
         return ResponseEntity.ok(response);

@@ -14,6 +14,7 @@ public class UpdateMenuItemRequest {
     private BigDecimal price;
     private MenuCategory category;
     private Boolean available;
+    private String imageUrl;
 
     public UpdateMenuItemRequest() {
     }
@@ -56,5 +57,13 @@ public class UpdateMenuItemRequest {
 
     public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

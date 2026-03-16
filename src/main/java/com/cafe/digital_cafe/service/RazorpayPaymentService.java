@@ -3,7 +3,10 @@ package com.cafe.digital_cafe.service;
 import com.cafe.digital_cafe.dto.RazorpayOrderResponse;
 import com.cafe.digital_cafe.dto.VerifyPaymentRequest;
 import com.cafe.digital_cafe.entity.CafeOrder;
+import com.cafe.digital_cafe.entity.RoleType;
+import com.cafe.digital_cafe.entity.User;
 import com.cafe.digital_cafe.repository.CafeOrderRepository;
+import com.cafe.digital_cafe.repository.UserRepository;
 import com.razorpay.Utils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,27 +35,40 @@ public class RazorpayPaymentService {
     private final String currency;
     private final String companyName;
     private final CafeOrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     public RazorpayPaymentService(
             @Value("${rzp.key_id}") String keyId,
             @Value("${rzp.key_secret}") String keySecret,
             @Value("${rzp.currency:INR}") String currency,
             @Value("${rzp.company_name:Digital Cafe}") String companyName,
-            CafeOrderRepository orderRepository) {
+            CafeOrderRepository orderRepository,
+            UserRepository userRepository) {
         this.keyId = keyId != null ? keyId.trim() : "";
         this.keySecret = keySecret != null ? keySecret.trim() : "";
         this.currency = currency != null ? currency.trim() : "INR";
         this.companyName = companyName != null ? companyName.trim() : "Digital Cafe";
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
         log.info("Razorpay loaded: key_id={}, key_secret length={} (expected 24 for correct secret)", this.keyId, this.keySecret.length());
     }
 
     public RazorpayOrderResponse createRazorpayOrder(Long orderId, Long userId) {
         CafeOrder order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-        if (!order.getUserId().equals(userId)) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        boolean isOwner = order.getUserId().equals(userId);
+        boolean isStaff = user.getRoleType() == RoleType.ADMIN ||
+                ((user.getRoleType() == RoleType.CAFE_OWNER || user.getRoleType() == RoleType.WAITER)
+                        && order.getCafeId().equals(user.getCafeId()));
+
+        if (!isOwner && !isStaff) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
         }
+
         if (order.getRazorpayPaymentId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order already paid");
         }
@@ -122,9 +138,19 @@ public class RazorpayPaymentService {
     public void verifyAndCapturePayment(Long orderId, Long userId, VerifyPaymentRequest request) {
         CafeOrder order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-        if (!order.getUserId().equals(userId)) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        boolean isOwner = order.getUserId().equals(userId);
+        boolean isStaff = user.getRoleType() == RoleType.ADMIN ||
+                ((user.getRoleType() == RoleType.CAFE_OWNER || user.getRoleType() == RoleType.WAITER)
+                        && order.getCafeId().equals(user.getCafeId()));
+
+        if (!isOwner && !isStaff) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
         }
+
         if (order.getRazorpayPaymentId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order already paid");
         }

@@ -33,4 +33,24 @@ public interface CafeOrderRepository extends JpaRepository<CafeOrder, Long> {
     BigDecimal sumTotalAmount();
 
     long countByStatusAndOrderDateBetween(OrderStatus status, LocalDate start, LocalDate end);
+
+    // Queries for CafeOwner Dashboard
+    long countByCafeId(Long cafeId);
+
+    long countByCafeIdAndStatus(Long cafeId, OrderStatus status);
+
+    long countByCafeIdAndOrderDateBetween(Long cafeId, LocalDate start, LocalDate end);
+
+    long countByCafeIdAndStatusAndOrderDateBetween(Long cafeId, OrderStatus status, LocalDate start, LocalDate end);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM CafeOrder o WHERE o.cafeId = :cafeId")
+    BigDecimal sumTotalAmountByCafeId(@Param("cafeId") Long cafeId);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM CafeOrder o WHERE o.cafeId = :cafeId AND o.orderDate BETWEEN :start AND :end")
+    BigDecimal sumTotalAmountByCafeIdAndOrderDateBetween(@Param("cafeId") Long cafeId, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    List<CafeOrder> findByCafeIdAndOrderDateBetweenOrderByOrderDateAsc(Long cafeId, LocalDate start, LocalDate end);
+
+    @Query("SELECT COUNT(DISTINCT o.userId) FROM CafeOrder o WHERE o.cafeId = :cafeId")
+    long countDistinctUsersByCafeId(@Param("cafeId") Long cafeId);
 }

@@ -30,6 +30,7 @@ public class ProfileResponse {
     private String plotNo;
     private String city;
     private String pincode;
+    private String profileImageUrl;
 
     public ProfileResponse() {
     }
@@ -160,5 +161,13 @@ public class ProfileResponse {
 
     public void setPincode(String pincode) {
         this.pincode = pincode;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

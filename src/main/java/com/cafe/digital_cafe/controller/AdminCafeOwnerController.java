@@ -33,7 +33,7 @@ public class AdminCafeOwnerController {
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<CafeOwnerResponse> updateStatus(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateCafeOwnerStatusRequest request) {
         CafeOwnerResponse response = adminCafeOwnerService.updateCafeOwnerStatus(id, request);
         return ResponseEntity.ok(response);

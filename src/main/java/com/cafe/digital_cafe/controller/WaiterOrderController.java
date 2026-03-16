@@ -33,7 +33,7 @@ public class WaiterOrderController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderResponse> markAsServed(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateOrderStatusRequest request) {
         OrderResponse response = waiterOrderService.markAsServed(id, request);
         return ResponseEntity.ok(response);

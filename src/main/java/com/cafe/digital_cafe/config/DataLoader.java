@@ -85,6 +85,7 @@ public class DataLoader implements CommandLineRunner {
                 RoleType.CAFE_OWNER
         );
         cafeOwner.setCafeId(cafeId);
+        cafeOwner.setProfileImageUrl("https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop");
         User customer = new User(
                 "John Doe",
                 "john@digitalcafe.com",
@@ -93,6 +94,7 @@ public class DataLoader implements CommandLineRunner {
                 "123 Main St, New York, NY",
                 RoleType.CUSTOMER
         );
+        customer.setProfileImageUrl("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop");
         User chef = new User(
                 "Bob Chef",
                 "chef@digitalcafe.com",
@@ -102,6 +104,7 @@ public class DataLoader implements CommandLineRunner {
                 RoleType.CHEF
         );
         chef.setCafeId(cafeId);
+        chef.setProfileImageUrl("https://images.unsplash.com/photo-1583394838336-acd977730f90?w=400&h=400&fit=crop");
         User waiter = new User(
                 "Alice Waiter",
                 "waiter@digitalcafe.com",
@@ -111,6 +114,7 @@ public class DataLoader implements CommandLineRunner {
                 RoleType.WAITER
         );
         waiter.setCafeId(cafeId);
+        waiter.setProfileImageUrl("https://images.unsplash.com/photo-1531123897727-8f129e16fd3c?w=400&h=400&fit=crop");
         User customer2 = new User(
                 "Mary Customer",
                 "mary@digitalcafe.com",
@@ -145,23 +149,23 @@ public class DataLoader implements CommandLineRunner {
         if (cafes.isEmpty()) return;
 
         Object[][] menuRows = new Object[][]{
-                {"Espresso", "Rich Italian espresso shot", "2.50", MenuCategory.BEVERAGE},
-                {"Cappuccino", "Espresso with steamed milk foam", "4.00", MenuCategory.BEVERAGE},
-                {"Latte", "Espresso with steamed milk", "4.50", MenuCategory.BEVERAGE},
-                {"Americano", "Espresso with hot water", "3.00", MenuCategory.BEVERAGE},
-                {"Cold Brew", "Slow-steeped iced coffee", "4.50", MenuCategory.BEVERAGE},
-                {"Fresh Orange Juice", "Freshly squeezed orange juice", "3.50", MenuCategory.BEVERAGE},
-                {"Club Sandwich", "Chicken, bacon, lettuce, tomato on toast", "8.50", MenuCategory.FOOD},
-                {"Caesar Salad", "Romaine, parmesan, croutons, Caesar dressing", "7.00", MenuCategory.FOOD},
-                {"Margherita Pizza", "Tomato, mozzarella, basil", "12.00", MenuCategory.FOOD},
-                {"Bacon & Eggs", "Classic breakfast with toast", "9.00", MenuCategory.FOOD},
-                {"Tiramisu", "Classic Italian coffee-flavored dessert", "6.00", MenuCategory.DESSERT},
-                {"Chocolate Brownie", "Warm chocolate brownie with ice cream", "5.50", MenuCategory.DESSERT},
-                {"Cheesecake", "New York style cheesecake slice", "5.00", MenuCategory.DESSERT},
-                {"Croissant", "Buttery French croissant", "3.50", MenuCategory.SNACK},
-                {"Muffin", "Blueberry or chocolate chip muffin", "3.00", MenuCategory.SNACK},
-                {"Nachos", "Crispy tortilla chips with cheese and salsa", "6.00", MenuCategory.SNACK}
-        };
+                {"Espresso", "Rich Italian espresso shot", "2.50", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=800&q=80"},
+                {"Cappuccino", "Espresso with steamed milk foam", "4.00", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=800&q=80"},
+                {"Latte", "Espresso with steamed milk", "4.50", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1536935338218-84117b461234?w=800&q=80"},
+                {"Americano", "Espresso with hot water", "3.00", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1551033406-611cf0a28f67?w=800&q=80"},
+                {"Cold Brew", "Slow-steeped iced coffee", "4.50", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1517701604599-bb0d6e84984f?w=800&q=80"},
+                {"Fresh Orange Juice", "Freshly squeezed orange juice", "3.50", MenuCategory.BEVERAGE, "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=800&q=80"},
+                {"Club Sandwich", "Chicken, bacon, lettuce, tomato on toast", "8.50", MenuCategory.FOOD, "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80"},
+                {"Caesar Salad", "Romaine, parmesan, croutons, Caesar dressing", "7.00", MenuCategory.FOOD, "https://images.unsplash.com/photo-1550304943-4f24f5c181c1?w=800&q=80"},
+                {"Margherita Pizza", "Tomato, mozzarella, basil", "12.00", MenuCategory.FOOD, "https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?w=800&q=80"},
+                {"Bacon & Eggs", "Classic breakfast with toast", "9.00", MenuCategory.FOOD, "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80"},
+                {"Tiramisu", "Classic Italian coffee-flavored dessert", "6.00", MenuCategory.DESSERT, "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80"},
+                {"Chocolate Brownie", "Warm chocolate brownie with ice cream", "5.50", MenuCategory.DESSERT, "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80"},
+                {"Cheesecake", "New York style cheesecake slice", "5.00", MenuCategory.DESSERT, "https://images.unsplash.com/photo-1524351199679-46cddfdbe647?w=800&q=80"},
+                {"Croissant", "Buttery French croissant", "3.50", MenuCategory.SNACK, "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&q=80"},
+                {"Muffin", "Blueberry or chocolate chip muffin", "3.00", MenuCategory.SNACK, "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&q=80"},
+                {"Nachos", "Crispy tortilla chips with cheese and salsa", "6.00", MenuCategory.SNACK, "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=800&q=80"}
+      };
 
         for (Cafe cafe : cafes) {
             Long cafeId = cafe.getId();
@@ -170,6 +174,7 @@ public class DataLoader implements CommandLineRunner {
             for (Object[] row : menuRows) {
                 MenuItem m = new MenuItem((String) row[0], (String) row[1], new BigDecimal((String) row[2]), (MenuCategory) row[3]);
                 m.setCafeId(cafeId);
+                m.setImageUrl((String) row[4]);
                 menuItemRepository.save(m);
             }
             System.out.println("  Sample menu items inserted for cafe: " + cafe.getName());
@@ -256,6 +261,7 @@ public class DataLoader implements CommandLineRunner {
                 null,
                 RoleType.ADMIN
         );
+        hema.setProfileImageUrl("https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop");
         userRepository.save(hema);
         System.out.println("  Admin created: hema@gmail.com / " + DEFAULT_PASSWORD);
     }
