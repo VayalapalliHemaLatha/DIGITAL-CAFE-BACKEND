@@ -32,6 +32,13 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/{orderId}/payment/reset")
+    public ResponseEntity<Void> resetPayment(@PathVariable("orderId") Long orderId) {
+        Long userId = getCurrentUserId();
+        paymentService.resetPayment(orderId, userId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{orderId}/payment/verify")
     public ResponseEntity<Void> verifyPayment(
             @PathVariable("orderId") Long orderId,

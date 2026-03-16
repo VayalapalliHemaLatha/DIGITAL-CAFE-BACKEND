@@ -175,4 +175,26 @@ public class RazorpayPaymentService {
                     "Payment verification failed: " + e.getMessage());
         }
     }
+
+    /**
+     * Clears Razorpay payment data for an order so payment can be created again (for testing).
+     * Allowed for order owner or staff (admin / cafe owner / waiter for that cafe).
+     */
+    public void resetPayment(Long orderId, Long userId) {
+        CafeOrder order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        boolean isOwner = order.getUserId().equals(userId);
+        boolean isStaff = user.getRoleType() == RoleType.ADMIN ||
+                ((user.getRoleType() == RoleType.CAFE_OWNER || user.getRoleType() == RoleType.WAITER)
+                        && order.getCafeId().equals(user.getCafeId()));
+        if (!isOwner && !isStaff) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your order");
+        }
+        order.setRazorpayOrderId(null);
+        order.setRazorpayPaymentId(null);
+        orderRepository.save(order);
+        log.info("Payment reset for order {} by user {}", orderId, userId);
+    }
 }
